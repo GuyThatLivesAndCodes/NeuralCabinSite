@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>About — NeuralCabin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* page hero */
+  .page-hero{padding-top:96px;padding-bottom:56px}
+  h1.page-h{
+    font-size:clamp(48px, 7vw, 96px);line-height:1;letter-spacing:-.035em;
+    margin:0 0 24px;font-weight:700;max-width:18ch;
+  }
+  h1.page-h .accent{color:var(--orange-2)}
+  .page-sub{
+    font-size:20px;color:var(--ink-dim);max-width:720px;line-height:1.55;margin:0;
+  }
+  .page-sub strong{color:var(--ink);font-weight:600}
+
+  /* app preview (full) */
+  .preview-wrap{padding-top:24px;padding-bottom:96px;position:relative}
+  .window{
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    background:var(--bg-card);
+    box-shadow:
+      0 60px 120px -40px rgba(0,0,0,.7),
+      0 0 0 1px rgba(232,131,90,.05),
+      inset 0 1px 0 rgba(255,255,255,.03);
+  }
+  .titlebar{
+    display:flex;align-items:center;gap:12px;padding:10px 14px;
+    background:#0e0a07;font-size:12px;color:var(--ink-dim);
+    border-bottom:1px solid #000;
+  }
+  .titlebar .dot-app{width:8px;height:8px;border-radius:50%;background:var(--ink-dim)}
+  .titlebar .title{flex:1}
+  .titlebar .winctl{display:flex;color:var(--ink-mute)}
+  .titlebar .winctl i{display:inline-flex;align-items:center;justify-content:center;width:36px;height:24px;font-style:normal;font-size:11px}
+  .app-head{display:flex;align-items:center;gap:24px;padding:14px 22px;border-bottom:1px solid var(--line)}
+  .app-head .lock{display:flex;align-items:baseline;gap:14px}
+  .app-head .lock b{font-size:18px;font-weight:700;letter-spacing:-.01em}
+  .app-head .lock span{font-size:13px;color:var(--ink-dim)}
+  .app-head .spacer{flex:1}
+  .app-head .net-label{font-family:var(--mono);font-size:11px;color:var(--ink-mute);letter-spacing:.14em;text-transform:uppercase}
+  .app-head .net-pick{
+    display:flex;align-items:center;gap:10px;padding:8px 12px;
+    border:1px solid var(--line-2);border-radius:6px;background:#0e0a07;
+    font-size:13px;min-width:280px;justify-content:space-between;
+  }
+  .app-head .net-pick .chev{color:var(--ink-mute);font-size:10px}
+  .app{display:grid;grid-template-columns:200px 1fr;min-height:560px}
+  .tabs{border-right:1px solid var(--line);padding:14px 14px;display:flex;flex-direction:column;gap:2px}
+  .tab{display:flex;align-items:center;padding:9px 14px;font-size:14px;color:var(--ink-dim);font-weight:500;border-radius:6px;cursor:pointer;letter-spacing:-.005em}
+  .tab:hover{color:var(--ink);background:#221a14}
+  .tab.active{color:var(--ink);background:var(--bg-hi);box-shadow:inset 2px 0 0 var(--orange)}
+  .panel{padding:22px 28px 28px}
+  .panel h2{font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.015em}
+  .panel .lede{font-size:14px;color:var(--ink-dim);margin:0 0 22px}
+  .nc-card{
+    border:1px solid var(--line);border-radius:8px;background:transparent;
+    padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:10px;
+  }
+  .nc-card.count{justify-content:space-between}
+  .nc-card .count-text{font-size:14px;color:var(--ink-dim)}
+  .nc-card .name{font-weight:700;font-size:15px;letter-spacing:-.005em;margin-right:4px}
+  .nc-card .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .nc-card .row-actions{margin-left:auto;display:flex;gap:6px}
+
+  /* positioning */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:56px}
+  .vs-card{border:1px solid var(--line);border-radius:12px;padding:30px;background:var(--bg-card);position:relative}
+  .vs-card.them{opacity:.78}
+  .vs-card.us{border-color:var(--orange);background:linear-gradient(180deg, rgba(232,131,90,.05) 0%, var(--bg-card) 100%)}
+  .vs-card .label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:16px;font-weight:500}
+  .vs-card.us .label{color:var(--orange)}
+  .vs-card h3{font-size:26px;font-weight:700;margin:0 0 18px;letter-spacing:-.02em}
+  .vs-card h3 .accent{color:var(--orange-2)}
+  .vs-card ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+  .vs-card li{display:flex;gap:14px;font-size:16px;color:var(--ink-dim);line-height:1.45}
+  .vs-card li .glyph{font-family:var(--mono);color:var(--ink-mute);min-width:18px;font-size:14px}
+  .vs-card.us li{color:var(--ink)}
+  .vs-card.us li .glyph{color:var(--orange)}
+
+  /* features */
+  .feats{display:grid;grid-template-columns:repeat(3, 1fr);gap:1px;margin-top:56px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .feat{padding:32px 28px;background:var(--bg-card)}
+  .feat-no{font-family:var(--mono);font-size:11px;color:var(--orange);font-weight:500;letter-spacing:.16em;margin-bottom:22px;display:flex;justify-content:space-between}
+  .feat-no span:last-child{color:var(--ink-mute)}
+  .feat h4{font-size:21px;font-weight:700;margin:0 0 10px;letter-spacing:-.015em;line-height:1.2}
+  .feat h4 .accent{color:var(--orange-2)}
+  .feat p{font-size:14.5px;color:var(--ink-dim);line-height:1.55;margin:0}
+  .feat .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+
+  /* code */
+  .code-row{display:grid;grid-template-columns:1fr 1.25fr;gap:56px;margin-top:56px;align-items:start}
+  .code-copy h3{font-size:30px;font-weight:700;margin:0 0 14px;letter-spacing:-.02em;line-height:1.15}
+  .code-copy h3 .accent{color:var(--orange-2)}
+  .code-copy p{font-size:16px;color:var(--ink-dim);line-height:1.6;margin:0 0 14px}
+  .code-copy code{font-family:var(--mono);color:var(--orange-2);font-size:.9em}
+  .code-copy .stat{display:flex;gap:10px;align-items:baseline;margin-top:22px;font-family:var(--mono);font-size:13px;color:var(--ink-mute);font-weight:500}
+  .code-copy .stat b{color:var(--orange);font-size:16px;font-weight:600}
+  pre.code{margin:0;border:1px solid var(--line);border-radius:10px;background:#0e0a07;padding:22px 24px;overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.65;color:var(--ink)}
+  .code-head{display:flex;align-items:center;gap:10px;padding:10px 16px;border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;background:var(--bg-card);font-family:var(--mono);font-size:11px;color:var(--ink-mute);font-weight:500;letter-spacing:.1em;text-transform:uppercase}
+  .code-head + pre.code{border-top-left-radius:0;border-top-right-radius:0}
+  .code-head .dot{width:8px;height:8px;border-radius:50%;background:var(--orange)}
+  .tk-kw{color:#e8835a}
+  .tk-fn{color:#f0a07d}
+  .tk-num{color:#e0bd7a}
+  .tk-cm{color:#6e5d44;font-style:italic}
+  .tk-tp{color:#cfae7a}
+  .tk-pn{color:#8a7a5e}
+
+  /* roadmap */
+  .timeline{display:grid;grid-template-columns:repeat(4, 1fr);gap:1px;margin-top:44px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .stage{padding:28px 24px;background:var(--bg-card);position:relative;display:flex;flex-direction:column}
+  .stage-tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:16px;font-weight:500;align-self:flex-start}
+  .stage.now .stage-tag{background:rgba(106,217,122,.15);color:var(--green);border:1px solid rgba(106,217,122,.4)}
+  .stage.next .stage-tag{background:var(--orange);color:#1a0f06}
+  .stage.soon .stage-tag{background:var(--orange-soft);color:var(--orange-2);border:1px solid var(--orange-ring)}
+  .stage.later .stage-tag{background:transparent;color:var(--ink-mute);border:1px solid var(--line-2)}
+  .stage h5{font-size:19px;font-weight:700;margin:0 0 8px;letter-spacing:-.015em;line-height:1.25}
+  .stage h5 .accent{color:var(--orange-2)}
+  .stage p{font-size:14px;color:var(--ink-dim);line-height:1.5;margin:0;flex:1}
+  .stage .price{margin-top:18px;font-family:var(--mono);font-size:11px;color:var(--ink-mute);padding-top:14px;border-top:1px dashed var(--line-2);letter-spacing:.04em}
+  .stage .price b{color:var(--orange);font-weight:600}
+
+  @media (max-width: 920px){
+    .app{grid-template-columns:1fr}
+    .tabs{flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--line);padding:8px}
+    .tab{white-space:nowrap;flex-shrink:0}
+    .tab.active{box-shadow:inset 0 -2px 0 var(--orange)}
+    .app-head{flex-wrap:wrap;gap:12px}
+    .app-head .net-pick{min-width:0;width:100%}
+    .vs{grid-template-columns:1fr}
+    .feats{grid-template-columns:1fr}
+    .timeline{grid-template-columns:1fr 1fr}
+    .code-row{grid-template-columns:1fr;gap:32px}
+    .nc-card{flex-wrap:wrap}
+    .nc-card .row-actions{margin-left:0}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"></span>
+      <span class="brand-name">NeuralCabin</span>
+    </a>
+    <ul>
+      <li><a href="about.html" class="current">About</a></li>
+      <li><a href="downloads.html">Downloads</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">GitHub</a></li>
+    </ul>
+    <div class="spacer"></div>
+    <span class="pill"><span class="dot"></span>v0.4 · open source</span>
+    <a class="gh" href="downloads.html">Download</a>
+  </div>
+</nav>
+
+<section class="page-hero shell">
+  <div class="eyebrow"><span class="bar"></span>About NeuralCabin</div>
+  <h1 class="page-h">A workbench, not a <span class="accent">chat box.</span></h1>
+  <p class="page-sub">
+    NeuralCabin is a <strong>pure Rust neural network workbench</strong>. You build networks from scratch — feed-forward for image classification, llama-style language models that export GGUF for LM Studio &amp; Ollama. <strong>Thousands of lines of code. Real results. No bullshit.</strong>
+  </p>
+</section>
+
+<!-- workbench -->
+<section class="preview-wrap shell">
+  <div class="window">
+    <div class="titlebar">
+      <span class="dot-app"></span>
+      <span class="title">NeuralCabin</span>
+      <span class="winctl"><i>—</i><i>▢</i><i>×</i></span>
+    </div>
+    <div class="app-head">
+      <div class="lock">
+        <b>NeuralCabin</b>
+        <span>Pure Rust neural-network workbench</span>
+      </div>
+      <div class="spacer"></div>
+      <span class="net-label">Network</span>
+      <div class="net-pick"><span>nano-clex · feed-forward · trained</span><span class="chev">▾</span></div>
+    </div>
+    <div class="app">
+      <aside class="tabs">
+        <div class="tab active">Networks</div>
+        <div class="tab">Corpus</div>
+        <div class="tab">Vocabulary</div>
+        <div class="tab">Training</div>
+        <div class="tab">Inference</div>
+        <div class="tab">Documentation</div>
+        <div class="tab">Server</div>
+        <div class="tab">Settings</div>
+      </aside>
+      <div class="panel">
+        <h2>Networks</h2>
+        <p class="lede">Create and manage neural-network architectures.</p>
+        <div class="nc-card count">
+          <span class="count-text">3 networks</span>
+          <button class="primary-btn">+ New network</button>
+        </div>
+        <div class="nc-card">
+          <span class="name">nano-clex</span>
+          <div class="chips">
+            <span class="chip">feed-forward</span>
+            <span class="chip">8 → 8</span>
+            <span class="chip">6 layers</span>
+            <span class="chip">1,368,192 params</span>
+            <span class="chip">ctx 64</span>
+            <span class="chip status">trained</span>
+          </div>
+          <div class="row-actions">
+            <button class="ghost-btn">Export</button>
+            <button class="ghost-btn danger">Delete</button>
+          </div>
+        </div>
+        <div class="nc-card">
+          <span class="name">xor-mlp</span>
+          <div class="chips">
+            <span class="chip">feed-forward</span>
+            <span class="chip">2 → 1</span>
+            <span class="chip">10 layers</span>
+            <span class="chip">249 params</span>
+            <span class="chip status">trained</span>
+          </div>
+          <div class="row-actions">
+            <button class="ghost-btn">Export</button>
+            <button class="ghost-btn danger">Delete</button>
+          </div>
+        </div>
+        <div class="nc-card">
+          <span class="name">nano-llama</span>
+          <div class="chips">
+            <span class="chip">transformer-lm</span>
+            <span class="chip">n_embd 64</span>
+            <span class="chip">n_heads 4</span>
+            <span class="chip">n_layers 2</span>
+            <span class="chip">131,392 params</span>
+            <span class="chip" style="color:var(--green);border-color:rgba(106,217,122,.4)">training · 1840/2000</span>
+          </div>
+          <div class="row-actions">
+            <button class="ghost-btn">Pause</button>
+            <button class="ghost-btn danger">Stop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- positioning -->
+<section class="section shell">
+  <div class="section-eyebrow">▌ Positioning</div>
+  <h2 class="section-h">Not another <span class="accent">LM runner.</span></h2>
+  <p class="section-lede">
+    Most "AI tools" download somebody else's weights and point you at a chat box. NeuralCabin is the opposite: a workbench where you wire the architecture, train it on your corpus, and walk away with a model that's yours.
+  </p>
+  <div class="vs">
+    <div class="vs-card them">
+      <div class="label">▢ LM runners</div>
+      <h3>Run someone else's model.</h3>
+      <ul>
+        <li><span class="glyph">—</span>Pick a model from a list. Download gigabytes of weights.</li>
+        <li><span class="glyph">—</span>Type into a chat box. Hope it does the thing.</li>
+        <li><span class="glyph">—</span>The architecture, the data, the training are opaque.</li>
+        <li><span class="glyph">—</span>You are a consumer of the model.</li>
+      </ul>
+    </div>
+    <div class="vs-card us">
+      <div class="label">▌ NeuralCabin</div>
+      <h3>You're the <span class="accent">author.</span></h3>
+      <ul>
+        <li><span class="glyph">+</span>Compose layers, activations, losses, optimizers by hand.</li>
+        <li><span class="glyph">+</span>Bring your own corpus. Train. Watch the loss in real time.</li>
+        <li><span class="glyph">+</span>Export GGUF for LM Studio &amp; Ollama, or JSON checkpoints.</li>
+        <li><span class="glyph">+</span>You own every weight. You understand every line.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- features -->
+<section class="section shell">
+  <div class="section-eyebrow">▌ Engine</div>
+  <h2 class="section-h">Thousands of lines. <span class="accent">Zero math deps.</span></h2>
+  <p class="section-lede">
+    The engine is hand-written Rust. Tensors, autograd, optimizers — all of it. No <code>ndarray</code>, no <code>tch-rs</code>, no <code>candle</code>. You can read the whole stack in an afternoon.
+  </p>
+  <div class="feats">
+    <div class="feat">
+      <div class="feat-no"><span>01</span><span>engine/tensor.rs</span></div>
+      <h4>Dense tensors &amp; <span class="accent">tape-based autograd</span></h4>
+      <p>Reverse-mode automatic differentiation on a flat Vec&lt;f32&gt; tensor type. Gradient checks ship with the repo so you can audit every backward pass.</p>
+      <div class="chips"><span class="chip">matmul</span><span class="chip">broadcasting</span><span class="chip">grad check</span></div>
+    </div>
+    <div class="feat">
+      <div class="feat-no"><span>02</span><span>engine/optimizer.rs</span></div>
+      <h4><span class="accent">Adam</span> &amp; SGD with momentum</h4>
+      <p>The classics, implemented end-to-end. XOR MLP converges to &lt;1e-3 loss in under 2k epochs with no handholding.</p>
+      <div class="chips"><span class="chip">adam</span><span class="chip">adamw</span><span class="chip">sgd + momentum</span></div>
+    </div>
+    <div class="feat">
+      <div class="feat-no"><span>03</span><span>engine/nn.rs</span></div>
+      <h4>Compose any architecture</h4>
+      <p>Linear and Activation primitives compose into Models via a flat LayerSpec list. Feed-forward today, llama-style transformers on the same trunk.</p>
+      <div class="chips"><span class="chip">linear</span><span class="chip">relu</span><span class="chip">tanh</span><span class="chip">softmax</span><span class="chip">rope</span><span class="chip">swiglu</span></div>
+    </div>
+    <div class="feat">
+      <div class="feat-no"><span>04</span><span>src-tauri</span></div>
+      <h4>Native window. <span class="accent">~10 MB.</span></h4>
+      <p>Built on Tauri. A real OS application — not a browser tab, not Electron. Installers from CI for Windows, macOS, and Linux.</p>
+      <div class="chips"><span class="chip">tauri</span><span class="chip">webview</span><span class="chip">no localhost</span></div>
+    </div>
+    <div class="feat">
+      <div class="feat-no"><span>05</span><span>frontend/tabs</span></div>
+      <h4>Eight tabs, one workflow</h4>
+      <p>Networks · Corpus · Vocabulary · Training · Inference · Documentation · Server · Settings. Live loss curves stream over Tauri IPC.</p>
+      <div class="chips"><span class="chip">react</span><span class="chip">typescript</span><span class="chip">ipc events</span></div>
+    </div>
+    <div class="feat">
+      <div class="feat-no"><span>06</span><span>persistence.rs</span></div>
+      <h4>Models you can <span class="accent">hold</span></h4>
+      <p>Save checkpoints to JSON. Export GGUF — drop your trained LM into LM Studio or Ollama and keep going.</p>
+      <div class="chips"><span class="chip">json checkpoint</span><span class="chip">gguf export</span><span class="chip">lm studio</span><span class="chip">ollama</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- code -->
+<section class="section shell">
+  <div class="section-eyebrow">▌ API</div>
+  <h2 class="section-h">An XOR network in <span class="accent">20 lines.</span></h2>
+  <p class="section-lede">
+    The engine is a normal Rust crate — pull it into any project. No build daemon, no protobuf, no python. The same code the workbench runs under the hood.
+  </p>
+  <div class="code-row">
+    <div class="code-copy">
+      <h3>Composable, <span class="accent">auditable</span>, fast enough.</h3>
+      <p>Define a model as a flat list of layer specs. Pick an optimizer and a loss. Hand it tensors. The autograd tape records every operation; <code>train_step</code> walks it backwards.</p>
+      <p>There is nothing magic happening underneath. You can <code>cargo expand</code> it and you will recognize every line.</p>
+      <div class="stat"><b>~3,400</b> LINES ENGINE RUST · <b>13</b> TESTS · <b>0</b> MATH CRATES</div>
+    </div>
+    <div>
+      <div class="code-head"><span class="dot"></span> examples/xor.rs</div>
+<pre class="code"><span class="tk-kw">use</span> <span class="tk-tp">neuralcabin_engine</span>::{
+    nn::{<span class="tk-tp">LayerSpec</span>, <span class="tk-tp">Model</span>},
+    optimizer::{<span class="tk-tp">Optimizer</span>, <span class="tk-tp">OptimizerKind</span>},
+    tensor::<span class="tk-tp">Tensor</span>,
+    <span class="tk-tp">Activation</span>, <span class="tk-tp">Loss</span>,
+};
+
+<span class="tk-kw">let mut</span> model = <span class="tk-tp">Model</span>::<span class="tk-fn">from_specs</span>(<span class="tk-num">2</span>, &[
+    <span class="tk-tp">LayerSpec</span>::<span class="tk-tp">Linear</span> { in_dim: <span class="tk-num">2</span>, out_dim: <span class="tk-num">8</span> },
+    <span class="tk-tp">LayerSpec</span>::<span class="tk-tp">Activation</span>(<span class="tk-tp">Activation</span>::<span class="tk-tp">Tanh</span>),
+    <span class="tk-tp">LayerSpec</span>::<span class="tk-tp">Linear</span> { in_dim: <span class="tk-num">8</span>, out_dim: <span class="tk-num">1</span> },
+    <span class="tk-tp">LayerSpec</span>::<span class="tk-tp">Activation</span>(<span class="tk-tp">Activation</span>::<span class="tk-tp">Sigmoid</span>),
+], <span class="tk-num">42</span>);
+
+<span class="tk-kw">let mut</span> opt = <span class="tk-tp">Optimizer</span>::<span class="tk-fn">new</span>(
+    <span class="tk-tp">OptimizerKind</span>::<span class="tk-tp">Adam</span> {
+        lr: <span class="tk-num">0.05</span>, beta1: <span class="tk-num">0.9</span>,
+        beta2: <span class="tk-num">0.999</span>, eps: <span class="tk-num">1e-8</span>,
+    },
+    &model.<span class="tk-fn">parameter_shapes</span>(),
+);
+
+<span class="tk-kw">let</span> x = <span class="tk-tp">Tensor</span>::<span class="tk-fn">new</span>(<span class="tk-pn">vec!</span>[<span class="tk-num">4</span>,<span class="tk-num">2</span>], <span class="tk-pn">vec!</span>[<span class="tk-num">0.</span>,<span class="tk-num">0.</span>, <span class="tk-num">0.</span>,<span class="tk-num">1.</span>, <span class="tk-num">1.</span>,<span class="tk-num">0.</span>, <span class="tk-num">1.</span>,<span class="tk-num">1.</span>]);
+<span class="tk-kw">let</span> y = <span class="tk-tp">Tensor</span>::<span class="tk-fn">new</span>(<span class="tk-pn">vec!</span>[<span class="tk-num">4</span>,<span class="tk-num">1</span>], <span class="tk-pn">vec!</span>[<span class="tk-num">0.</span>, <span class="tk-num">1.</span>, <span class="tk-num">1.</span>, <span class="tk-num">0.</span>]);
+
+<span class="tk-kw">for</span> _ <span class="tk-kw">in</span> <span class="tk-num">0</span>..<span class="tk-num">2000</span> {
+    model.<span class="tk-fn">train_step</span>(&<span class="tk-kw">mut</span> opt, <span class="tk-tp">Loss</span>::<span class="tk-tp">MeanSquaredError</span>, &x, &y);
+}
+
+<span class="tk-cm">// → predictions: [0.04, 0.96, 0.96, 0.04]</span>
+<span class="tk-kw">let</span> pred = model.<span class="tk-fn">predict</span>(&x);</pre>
+    </div>
+  </div>
+</section>
+
+<!-- roadmap -->
+<section class="section shell">
+  <div class="section-eyebrow">▌ Roadmap</div>
+  <h2 class="section-h">Open source today. <span class="accent">Browser tomorrow.</span></h2>
+  <p class="section-lede">
+    NeuralCabin is free and fully open source. The hosted version is for people who want to skip the install and train on a real VM without setting one up.
+  </p>
+  <div class="timeline">
+    <div class="stage now">
+      <span class="stage-tag">● Now · v0.4</span>
+      <h5>Desktop app, <span class="accent">open source</span></h5>
+      <p>Download the installer for your OS. Build feed-forward networks and llama-style transformers. Train them. Export GGUF.</p>
+      <div class="price">Free · self-hosted</div>
+    </div>
+    <div class="stage next">
+      <span class="stage-tag">▸ Next · v0.5</span>
+      <h5>Plugin system</h5>
+      <p>Drop in custom layer types, custom optimizers, custom losses. Share them. The engine becomes extensible without forking.</p>
+      <div class="price">Free · self-hosted</div>
+    </div>
+    <div class="stage soon">
+      <span class="stage-tag">◆ Soon</span>
+      <h5>More <span class="accent">network types</span></h5>
+      <p>CNNs for image classification. RNNs for sequence work. New architectures land on the same engine trunk, same UI.</p>
+      <div class="price">Free · self-hosted</div>
+    </div>
+    <div class="stage later">
+      <span class="stage-tag">◇ Later</span>
+      <h5>NeuralCabin Cloud</h5>
+      <p>Build, train, and play with networks from your browser. Backed by a paid VPS. Mild limits. No install required.</p>
+      <div class="price"><b>See pricing</b> · paid VM</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="shell foot">
+    <div class="foot-l">© 2026 <b>NeuralCabin</b> · GPL-3.0 · Built in Rust, in public.</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="downloads.html">Downloads</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">GitHub</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pricing — NeuralCabin Cloud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .page-hero{padding-top:96px;padding-bottom:36px;text-align:center}
+  .page-hero .eyebrow{justify-content:center}
+  h1.page-h{
+    font-size:clamp(48px, 7vw, 96px);line-height:1;letter-spacing:-.035em;
+    margin:0 auto 22px;font-weight:700;max-width:18ch;
+  }
+  h1.page-h .accent{color:var(--orange-2)}
+  .page-sub{font-size:19px;color:var(--ink-dim);max-width:720px;line-height:1.55;margin:0 auto}
+  .page-sub strong{color:var(--ink);font-weight:600}
+
+  /* Self-hosted callout */
+  .self-host{
+    margin:48px auto 0;max-width:880px;padding:18px 22px;
+    border:1px solid var(--line-2);border-radius:12px;background:var(--bg-card);
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  }
+  .self-host .ic{
+    width:42px;height:42px;border-radius:50%;background:rgba(106,217,122,.15);
+    display:flex;align-items:center;justify-content:center;color:var(--green);font-size:18px;
+    flex-shrink:0;border:1px solid rgba(106,217,122,.4);
+  }
+  .self-host .tx{flex:1;font-size:14px;color:var(--ink-dim);line-height:1.55;min-width:240px}
+  .self-host .tx b{color:var(--ink);font-weight:600}
+  .self-host a{color:var(--orange);font-weight:500;text-decoration:underline}
+  .self-host a:hover{color:var(--orange-2)}
+
+  /* billing toggle */
+  .billing{
+    display:flex;justify-content:center;align-items:center;gap:14px;
+    margin:64px 0 32px;font-family:var(--mono);font-size:12px;
+    color:var(--ink-mute);letter-spacing:.08em;text-transform:uppercase;
+  }
+  .billing .switch{
+    position:relative;width:54px;height:28px;background:var(--bg-card);
+    border:1px solid var(--line-2);border-radius:999px;cursor:pointer;
+  }
+  .billing .switch::after{
+    content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;
+    border-radius:50%;background:var(--orange);transition:left .2s ease;
+  }
+  .billing.yearly .switch::after{left:28px}
+  .billing .active{color:var(--ink)}
+  .billing .save{
+    color:var(--orange);font-weight:600;
+    padding:3px 8px;border:1px solid var(--orange-ring);border-radius:999px;
+    margin-left:4px;
+  }
+
+  /* tiers */
+  .tiers{display:grid;grid-template-columns:repeat(4, 1fr);gap:14px;padding-bottom:32px}
+  .tier{
+    border:1px solid var(--line);border-radius:14px;background:var(--bg-card);
+    padding:28px 24px;display:flex;flex-direction:column;gap:18px;position:relative;
+  }
+  .tier.featured{
+    border-color:var(--orange);
+    background:linear-gradient(180deg, rgba(232,131,90,.08) 0%, var(--bg-card) 100%);
+    box-shadow:0 30px 80px -40px rgba(232,131,90,.4);
+  }
+  .tier .ribbon{
+    position:absolute;top:-10px;right:18px;font-family:var(--mono);font-size:10px;
+    background:var(--orange);color:#1a0f06;padding:4px 10px;border-radius:999px;
+    letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+  }
+  .tier .h-row{display:flex;align-items:center;justify-content:space-between}
+  .tier h3{font-size:20px;margin:0;font-weight:700;letter-spacing:-.01em}
+  .tier .badge{
+    font-family:var(--mono);font-size:10px;color:var(--ink-mute);
+    letter-spacing:.12em;text-transform:uppercase;
+  }
+  .tier .price{
+    display:flex;align-items:baseline;gap:6px;
+    padding-bottom:18px;border-bottom:1px solid var(--line);
+  }
+  .tier .price .amt{font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1}
+  .tier .price .cur{font-size:18px;color:var(--ink-dim);font-weight:600;align-self:flex-start;margin-top:6px}
+  .tier .price .per{font-size:13px;color:var(--ink-mute);font-family:var(--mono)}
+  .tier .price .crossed{font-size:13px;color:var(--ink-mute);text-decoration:line-through;margin-left:6px;font-family:var(--mono)}
+  .tier .price.free .amt{color:var(--green)}
+
+  .tier .desc{font-size:13.5px;color:var(--ink-dim);line-height:1.5;margin:-4px 0 4px}
+  .tier ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;flex:1}
+  .tier ul li{display:flex;gap:10px;font-size:13.5px;color:var(--ink);line-height:1.45}
+  .tier ul li .ck{color:var(--orange);font-family:var(--mono);font-weight:600;flex-shrink:0;width:14px}
+  .tier ul li.mute{color:var(--ink-mute)}
+  .tier ul li.mute .ck{color:var(--ink-mute)}
+  .tier ul li b{color:var(--ink);font-weight:600}
+
+  .tier .cta-btn{
+    padding:12px;border-radius:8px;text-align:center;font-weight:600;font-size:14px;
+    border:1px solid var(--line-2);background:transparent;color:var(--ink);cursor:pointer;
+    font-family:var(--sans);transition:all .15s ease;
+  }
+  .tier .cta-btn:hover{border-color:var(--orange);color:var(--orange-2)}
+  .tier.featured .cta-btn{background:var(--orange);color:#1a0f06;border-color:var(--orange)}
+  .tier.featured .cta-btn:hover{background:var(--orange-2);border-color:var(--orange-2)}
+
+  /* limit explainer */
+  .limits{padding-top:24px;padding-bottom:80px}
+  .lim-head{margin-bottom:24px}
+  .lim-head h3{font-size:26px;font-weight:700;margin:0 0 8px;letter-spacing:-.015em}
+  .lim-head p{font-size:15px;color:var(--ink-dim);margin:0;max-width:680px;line-height:1.55}
+  .lim-table{
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg-card);
+  }
+  .lim-row{
+    display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;
+    border-bottom:1px solid var(--line);
+  }
+  .lim-row:last-child{border-bottom:none}
+  .lim-row.head{background:#0e0a07;font-family:var(--mono);font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.12em;font-weight:500}
+  .lim-row > div{padding:14px 18px;font-size:13.5px;display:flex;align-items:center;border-right:1px solid var(--line)}
+  .lim-row > div:last-child{border-right:none}
+  .lim-row .feat{font-weight:600;color:var(--ink)}
+  .lim-row .val{font-family:var(--mono);color:var(--ink-dim);font-size:12px}
+  .lim-row .val.yes{color:var(--orange)}
+  .lim-row .val.no{color:var(--ink-mute)}
+  .lim-row.head > div{font-weight:500}
+  .lim-row.head .col-feat{color:var(--ink)}
+
+  /* faq */
+  .faq-wrap{padding-top:24px;padding-bottom:80px}
+  .faq-head{margin-bottom:24px}
+  .faq-head h3{font-size:26px;font-weight:700;margin:0 0 8px;letter-spacing:-.015em}
+  .faq-head p{font-size:15px;color:var(--ink-dim);margin:0}
+  .faq{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  details.q{
+    border:1px solid var(--line);border-radius:10px;background:var(--bg-card);
+    padding:18px 22px;
+  }
+  details.q[open]{border-color:var(--orange-ring)}
+  details.q summary{
+    font-weight:600;font-size:15px;cursor:pointer;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    letter-spacing:-.005em;
+  }
+  details.q summary::-webkit-details-marker{display:none}
+  details.q summary::after{
+    content:"+";color:var(--orange);font-family:var(--mono);font-size:18px;font-weight:400;
+  }
+  details.q[open] summary::after{content:"−"}
+  details.q .a{
+    margin-top:12px;padding-top:12px;border-top:1px dashed var(--line-2);
+    font-size:14px;color:var(--ink-dim);line-height:1.6;
+  }
+  details.q .a a{color:var(--orange);text-decoration:underline}
+  details.q .a a:hover{color:var(--orange-2)}
+
+  /* waitlist */
+  .waitlist-wrap{padding-top:24px;padding-bottom:120px}
+  .waitlist{
+    border:1px solid var(--orange);border-radius:14px;
+    background:linear-gradient(180deg, rgba(232,131,90,.08) 0%, var(--bg-card) 100%);
+    padding:48px 56px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+  }
+  .waitlist .tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:11px;color:var(--orange);
+    letter-spacing:.14em;text-transform:uppercase;font-weight:500;
+    padding:5px 10px;border:1px solid var(--orange-ring);border-radius:999px;margin-bottom:18px;
+  }
+  .waitlist h3{font-size:32px;font-weight:700;margin:0 0 12px;letter-spacing:-.02em;line-height:1.1}
+  .waitlist h3 .accent{color:var(--orange-2)}
+  .waitlist p{font-size:15px;color:var(--ink-dim);line-height:1.55;margin:0}
+  .waitlist form{display:flex;flex-direction:column;gap:10px}
+  .waitlist input{
+    padding:13px 16px;background:#0e0a07;border:1px solid var(--line-2);border-radius:8px;
+    color:var(--ink);font-family:var(--sans);font-size:15px;
+  }
+  .waitlist input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-soft)}
+  .waitlist .opts{display:flex;gap:8px;flex-wrap:wrap}
+  .waitlist .opt{
+    padding:8px 12px;border:1px solid var(--line-2);border-radius:999px;
+    font-family:var(--mono);font-size:11px;color:var(--ink-dim);cursor:pointer;
+    letter-spacing:.06em;
+  }
+  .waitlist .opt.on{border-color:var(--orange);color:var(--orange);background:var(--orange-soft)}
+  .waitlist button.sub{
+    padding:14px;border-radius:8px;background:var(--orange);color:#1a0f06;
+    font-weight:700;font-size:15px;border:none;cursor:pointer;font-family:var(--sans);
+    margin-top:4px;
+  }
+  .waitlist button.sub:hover{background:var(--orange-2)}
+  .waitlist .small{
+    font-family:var(--mono);font-size:10px;color:var(--ink-mute);
+    letter-spacing:.06em;margin-top:4px;
+  }
+  .waitlist .thanks{
+    padding:16px;border:1px solid var(--green);border-radius:8px;
+    background:rgba(106,217,122,.08);color:var(--green);font-size:14px;
+    text-align:center;font-family:var(--mono);
+  }
+
+  @media (max-width: 1100px){
+    .tiers{grid-template-columns:1fr 1fr;gap:14px}
+  }
+  @media (max-width: 920px){
+    .tiers{grid-template-columns:1fr}
+    .lim-row{grid-template-columns:1fr;}
+    .lim-row > div{border-right:none;border-bottom:1px solid var(--line);padding:10px 16px}
+    .lim-row.head{display:none}
+    .lim-row > div::before{
+      content:attr(data-label);
+      font-family:var(--mono);font-size:10px;color:var(--ink-mute);letter-spacing:.1em;
+      text-transform:uppercase;margin-right:10px;
+    }
+    .faq{grid-template-columns:1fr}
+    .waitlist{grid-template-columns:1fr;padding:32px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"></span>
+      <span class="brand-name">NeuralCabin</span>
+    </a>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="downloads.html">Downloads</a></li>
+      <li><a href="pricing.html" class="current">Pricing</a></li>
+      <li><a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">GitHub</a></li>
+    </ul>
+    <div class="spacer"></div>
+    <span class="pill"><span class="dot" style="background:var(--orange)"></span>Cloud · early access</span>
+    <a class="gh" href="downloads.html">Download</a>
+  </div>
+</nav>
+
+<section class="page-hero shell">
+  <div class="eyebrow"><span class="bar"></span>NeuralCabin Cloud · in preview</div>
+  <h1 class="page-h">Build networks <span class="accent">from your browser.</span></h1>
+  <p class="page-sub">
+    NeuralCabin Cloud runs the workbench on a paid VM so you can train without an install — or a rig. Same engine, same UI, <strong>plus real compute.</strong> Pricing below is preview pricing. Lock it in for life if you join the waitlist.
+  </p>
+
+  <div class="self-host">
+    <div class="ic">●</div>
+    <div class="tx">
+      <b>Still free, forever, on the desktop.</b> The open-source NeuralCabin you download today is GPL-3.0 and self-hosted at no cost. Cloud is for people who want to skip the install and rent the compute.
+      <a href="downloads.html">Get the free desktop app →</a>
+    </div>
+  </div>
+</section>
+
+<!-- billing toggle -->
+<section class="shell">
+  <div class="billing" id="billing">
+    <span class="active" data-period="monthly">Monthly</span>
+    <div class="switch" id="bswitch"></div>
+    <span data-period="yearly">Yearly <span class="save">−20%</span></span>
+  </div>
+</section>
+
+<!-- tiers -->
+<section class="shell">
+  <div class="tiers">
+
+    <!-- HOBBY -->
+    <div class="tier">
+      <div class="h-row">
+        <h3>Hobby</h3>
+        <span class="badge">Free</span>
+      </div>
+      <div class="price free">
+        <span class="amt">$0</span>
+        <span class="per">forever</span>
+      </div>
+      <p class="desc">Kick the tires. Train tiny networks in your browser without setting up a thing.</p>
+      <ul>
+        <li><span class="ck">+</span><b>1 GB</b> persistent storage</li>
+        <li><span class="ck">+</span><b>2 hrs</b> CPU compute / month</li>
+        <li><span class="ck">+</span>Up to <b>100k params</b> per network</li>
+        <li><span class="ck">+</span>Feed-forward networks only</li>
+        <li><span class="ck">+</span>1 concurrent training job</li>
+        <li class="mute"><span class="ck">—</span>No GPU compute</li>
+        <li class="mute"><span class="ck">—</span>No GGUF export</li>
+      </ul>
+      <button class="cta-btn" data-tier="hobby">Start free</button>
+    </div>
+
+    <!-- BUILDER (featured) -->
+    <div class="tier featured">
+      <span class="ribbon">Most popular</span>
+      <div class="h-row">
+        <h3>Builder</h3>
+        <span class="badge">For solo authors</span>
+      </div>
+      <div class="price">
+        <span class="cur">$</span>
+        <span class="amt" data-monthly="19" data-yearly="15">19</span>
+        <span class="per">/ month</span>
+        <span class="crossed" data-yearly-show="$228 → $180/yr">billed monthly</span>
+      </div>
+      <p class="desc">Train real models. CPU-heavy compute, GPU bursts for finetunes, full export.</p>
+      <ul>
+        <li><span class="ck">+</span><b>25 GB</b> persistent storage</li>
+        <li><span class="ck">+</span><b>40 hrs</b> CPU + <b>4 hrs</b> GPU / month</li>
+        <li><span class="ck">+</span>Up to <b>50M params</b> per network</li>
+        <li><span class="ck">+</span>Feed-forward, CNN, RNN, transformer-LM</li>
+        <li><span class="ck">+</span>2 concurrent training jobs</li>
+        <li><span class="ck">+</span><b>GGUF export</b> — LM Studio &amp; Ollama</li>
+        <li><span class="ck">+</span>Plugin system access</li>
+        <li><span class="ck">+</span>Lock preview pricing for life</li>
+      </ul>
+      <button class="cta-btn" data-tier="builder">Reserve a seat</button>
+    </div>
+
+    <!-- STUDIO -->
+    <div class="tier">
+      <div class="h-row">
+        <h3>Studio</h3>
+        <span class="badge">For serious work</span>
+      </div>
+      <div class="price">
+        <span class="cur">$</span>
+        <span class="amt" data-monthly="59" data-yearly="47">59</span>
+        <span class="per">/ month</span>
+        <span class="crossed" data-yearly-show="$708 → $564/yr">billed monthly</span>
+      </div>
+      <p class="desc">More VRAM, more storage, longer runs. For people training overnight.</p>
+      <ul>
+        <li><span class="ck">+</span><b>200 GB</b> persistent storage</li>
+        <li><span class="ck">+</span><b>200 hrs</b> CPU + <b>40 hrs</b> GPU / month</li>
+        <li><span class="ck">+</span>Up to <b>2B params</b> per network</li>
+        <li><span class="ck">+</span>All network types + future architectures</li>
+        <li><span class="ck">+</span>5 concurrent training jobs</li>
+        <li><span class="ck">+</span>Priority queue (~3× faster job pickup)</li>
+        <li><span class="ck">+</span>SSH into the workbench VM</li>
+        <li><span class="ck">+</span>Email support</li>
+      </ul>
+      <button class="cta-btn" data-tier="studio">Reserve a seat</button>
+    </div>
+
+    <!-- TEAM -->
+    <div class="tier">
+      <div class="h-row">
+        <h3>Team</h3>
+        <span class="badge">5+ seats</span>
+      </div>
+      <div class="price">
+        <span class="amt">Custom</span>
+        <span class="per">talk to us</span>
+      </div>
+      <p class="desc">Shared workbenches, audit logs, SSO. We provision the VMs in your region.</p>
+      <ul>
+        <li><span class="ck">+</span>Everything in <b>Studio</b></li>
+        <li><span class="ck">+</span>Shared corpora &amp; vocabularies</li>
+        <li><span class="ck">+</span>Per-user dashboards &amp; quotas</li>
+        <li><span class="ck">+</span><b>Pooled compute</b> across seats</li>
+        <li><span class="ck">+</span>SSO (SAML / OIDC)</li>
+        <li><span class="ck">+</span>Audit log + role-based access</li>
+        <li><span class="ck">+</span>Dedicated VM pool (optional)</li>
+        <li><span class="ck">+</span>SLA + DPA on request</li>
+      </ul>
+      <button class="cta-btn" data-tier="team">Contact us</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- limits table -->
+<section class="limits shell">
+  <div class="lim-head">
+    <h3>What "mild limits" actually means.</h3>
+    <p>No surprise overages. When you hit a limit, training pauses and we tell you — you decide whether to upgrade, wait for the next cycle, or export and run locally on the free desktop app.</p>
+  </div>
+  <div class="lim-table">
+    <div class="lim-row head">
+      <div class="col-feat">Limit</div>
+      <div>Hobby</div>
+      <div>Builder</div>
+      <div>Studio</div>
+      <div>Team</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">Persistent storage</div>
+      <div class="val" data-label="Hobby">1 GB</div>
+      <div class="val yes" data-label="Builder">25 GB</div>
+      <div class="val yes" data-label="Studio">200 GB</div>
+      <div class="val yes" data-label="Team">Pooled · custom</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">CPU compute / month</div>
+      <div class="val" data-label="Hobby">2 hrs</div>
+      <div class="val yes" data-label="Builder">40 hrs</div>
+      <div class="val yes" data-label="Studio">200 hrs</div>
+      <div class="val yes" data-label="Team">Pooled</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">GPU compute / month</div>
+      <div class="val no" data-label="Hobby">—</div>
+      <div class="val yes" data-label="Builder">4 hrs</div>
+      <div class="val yes" data-label="Studio">40 hrs</div>
+      <div class="val yes" data-label="Team">Pooled</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">Max params / network</div>
+      <div class="val" data-label="Hobby">100k</div>
+      <div class="val yes" data-label="Builder">50M</div>
+      <div class="val yes" data-label="Studio">2B</div>
+      <div class="val yes" data-label="Team">No cap</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">Concurrent jobs</div>
+      <div class="val" data-label="Hobby">1</div>
+      <div class="val yes" data-label="Builder">2</div>
+      <div class="val yes" data-label="Studio">5</div>
+      <div class="val yes" data-label="Team">20+</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">Network types</div>
+      <div class="val" data-label="Hobby">Feed-forward</div>
+      <div class="val yes" data-label="Builder">All</div>
+      <div class="val yes" data-label="Studio">All + early access</div>
+      <div class="val yes" data-label="Team">All + early access</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">GGUF / LM Studio export</div>
+      <div class="val no" data-label="Hobby">—</div>
+      <div class="val yes" data-label="Builder">✓</div>
+      <div class="val yes" data-label="Studio">✓</div>
+      <div class="val yes" data-label="Team">✓</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">SSH into workbench</div>
+      <div class="val no" data-label="Hobby">—</div>
+      <div class="val no" data-label="Builder">—</div>
+      <div class="val yes" data-label="Studio">✓</div>
+      <div class="val yes" data-label="Team">✓</div>
+    </div>
+    <div class="lim-row">
+      <div class="feat" data-label="Limit">SSO &amp; audit log</div>
+      <div class="val no" data-label="Hobby">—</div>
+      <div class="val no" data-label="Builder">—</div>
+      <div class="val no" data-label="Studio">—</div>
+      <div class="val yes" data-label="Team">✓</div>
+    </div>
+  </div>
+</section>
+
+<!-- faq -->
+<section class="faq-wrap shell">
+  <div class="faq-head">
+    <h3>Common questions</h3>
+    <p>If we missed yours, ask on <a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin/discussions" style="color:var(--orange);text-decoration:underline">GitHub Discussions</a>.</p>
+  </div>
+  <div class="faq">
+    <details class="q" open>
+      <summary>Is the desktop version still free?</summary>
+      <div class="a">Yes — and it always will be. The open-source workbench you download today is GPL-3.0 with no usage limits. Cloud is a separate, optional product for people who would rather not run their own machine.</div>
+    </details>
+    <details class="q">
+      <summary>What does "preview pricing" mean?</summary>
+      <div class="a">NeuralCabin Cloud is not generally available yet. Anyone who joins during preview locks in the rate above for as long as they stay subscribed. When we launch publicly, new sign-ups may pay more.</div>
+    </details>
+    <details class="q">
+      <summary>What GPUs do you use?</summary>
+      <div class="a">Workloads run on consumer-class GPUs from our VPS partner — currently L4 / A10 class, with bursts to higher-tier cards for Studio. We do not run on H100s today; the engine is being tuned for cost-efficient training rather than raw FLOPs.</div>
+    </details>
+    <details class="q">
+      <summary>Can I move my work between cloud and desktop?</summary>
+      <div class="a">Yes. Every network, corpus, and vocabulary can be exported as JSON checkpoints or GGUF files and pulled into the desktop app. You are never locked in.</div>
+    </details>
+    <details class="q">
+      <summary>What happens when I hit a limit?</summary>
+      <div class="a">Training pauses and you get a notification. Nothing auto-upgrades or auto-charges. You decide: upgrade, wait until next cycle, or export the checkpoint and continue locally on the free desktop app.</div>
+    </details>
+    <details class="q">
+      <summary>Refunds?</summary>
+      <div class="a">Within 14 days of your first charge, full refund, no questions. After that, prorated for unused time on yearly plans.</div>
+    </details>
+  </div>
+</section>
+
+<!-- waitlist -->
+<section class="waitlist-wrap shell">
+  <div class="waitlist">
+    <div>
+      <span class="tag">● Cloud · early access</span>
+      <h3>Lock in <span class="accent">preview pricing.</span></h3>
+      <p>Join the waitlist and we'll send an invite when your tier opens up. Locked rates for life. No spam — one launch email, then onboarding.</p>
+    </div>
+    <div>
+      <form id="wl">
+        <input type="email" placeholder="you@studio.dev" required />
+        <div class="opts" role="group">
+          <span class="opt on" data-tier="hobby">Hobby</span>
+          <span class="opt on" data-tier="builder">Builder</span>
+          <span class="opt" data-tier="studio">Studio</span>
+          <span class="opt" data-tier="team">Team</span>
+        </div>
+        <button class="sub" type="submit">Reserve my seat →</button>
+        <div class="small">We use your email only to send the invite. Unsubscribe at any time.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="shell foot">
+    <div class="foot-l">© 2026 <b>NeuralCabin</b> · Preview pricing — subject to change at launch.</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="downloads.html">Downloads</a></li>
+      <li><a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">GitHub</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* billing toggle */
+  const billing = document.getElementById("billing");
+  const sw = document.getElementById("bswitch");
+  let period = "monthly";
+
+  function applyPeriod(){
+    document.querySelectorAll(".billing [data-period]").forEach(el => {
+      el.classList.toggle("active", el.dataset.period === period);
+    });
+    billing.classList.toggle("yearly", period === "yearly");
+    document.querySelectorAll(".price .amt[data-monthly]").forEach(el => {
+      el.textContent = period === "yearly" ? el.dataset.yearly : el.dataset.monthly;
+    });
+    document.querySelectorAll(".price .crossed[data-yearly-show]").forEach(el => {
+      if (period === "yearly"){
+        el.textContent = el.dataset.yearlyShow;
+        el.style.display = "inline";
+      } else {
+        el.textContent = "billed monthly";
+        el.style.display = "none";
+      }
+    });
+  }
+  sw.addEventListener("click", () => {
+    period = (period === "monthly") ? "yearly" : "monthly";
+    applyPeriod();
+  });
+  document.querySelectorAll(".billing [data-period]").forEach(el => {
+    el.addEventListener("click", () => { period = el.dataset.period; applyPeriod(); });
+  });
+  applyPeriod();
+
+  /* tier CTA buttons scroll to waitlist + flip the right chip */
+  document.querySelectorAll(".tier .cta-btn[data-tier]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tier = btn.dataset.tier;
+      document.querySelectorAll(".waitlist .opt").forEach(o => {
+        o.classList.toggle("on", o.dataset.tier === tier);
+      });
+      document.querySelector(".waitlist").scrollIntoView({behavior:"smooth", block:"center"});
+      const input = document.querySelector(".waitlist input");
+      setTimeout(() => input && input.focus(), 400);
+    });
+  });
+
+  /* waitlist tier chips */
+  document.querySelectorAll(".waitlist .opt").forEach(o => {
+    o.addEventListener("click", () => o.classList.toggle("on"));
+  });
+
+  /* waitlist submit */
+  const form = document.getElementById("wl");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = form.querySelector("input").value.trim();
+    if (!email) return;
+    form.innerHTML = '<div class="thanks">✓ You\'re on the list — invite headed to <b style="color:var(--ink)">' + email.replace(/[<>&"]/g, "") + '</b></div>';
+  });
+})();
+</script>
+
+</body>
+</html>

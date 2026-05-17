@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NeuralCabin — pure Rust neural network workbench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* condensed landing-specific */
+  .hero{padding-top:120px;padding-bottom:80px;position:relative;text-align:center}
+  .hero .eyebrow{justify-content:center}
+  h1.hero-h{
+    font-size:clamp(56px, 10vw, 144px);line-height:.96;letter-spacing:-.04em;
+    margin:0 auto 28px;font-weight:800;max-width:14ch;
+  }
+  h1.hero-h .accent{color:var(--orange-2);font-style:italic;font-weight:700}
+  .hero-sub{
+    font-size:21px;color:var(--ink-dim);max-width:640px;line-height:1.5;
+    margin:0 auto 36px;font-weight:400;
+  }
+  .hero-sub strong{color:var(--ink);font-weight:600}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .hero-meta{
+    margin-top:56px;display:flex;gap:36px;flex-wrap:wrap;justify-content:center;
+    font-family:var(--mono);font-size:11px;color:var(--ink-mute);
+    text-transform:uppercase;letter-spacing:.14em;
+  }
+  .hero-meta span{display:flex;align-items:center;gap:8px}
+  .hero-meta b{color:var(--orange);font-weight:600}
+
+  /* live demo 2-up */
+  .demo-wrap{padding-top:48px;padding-bottom:88px}
+  .demo-2up{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;max-width:1180px;margin:0 auto}
+  .panel{
+    border:1px solid var(--line);border-radius:12px;background:var(--bg-card);
+    box-shadow:0 40px 100px -50px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.02);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .panel.glow{box-shadow:0 40px 100px -50px rgba(0,0,0,.7), 0 0 0 1px rgba(232,131,90,.08), inset 0 1px 0 rgba(255,255,255,.02)}
+  .ph{
+    display:flex;align-items:center;gap:10px;padding:14px 18px;
+    border-bottom:1px solid var(--line);
+  }
+  .ph .lbl{font-family:var(--mono);font-size:11px;color:var(--ink-mute);letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+  .ph .title{font-size:14px;font-weight:700;letter-spacing:-.01em}
+  .ph .title .accent{color:var(--orange-2)}
+  .ph .spacer{flex:1}
+  .ph .status{
+    display:inline-flex;align-items:center;gap:7px;padding:3px 10px;border-radius:999px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  }
+  .ph .status .dot{width:6px;height:6px;border-radius:50%}
+  .ph .status.live{color:var(--green);border:1px solid rgba(106,217,122,.4)}
+  .ph .status.live .dot{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.4s ease-in-out infinite}
+  .ph .status.ready{color:var(--orange);border:1px solid var(--orange-ring)}
+  .ph .status.ready .dot{background:var(--orange)}
+  @keyframes pulse{50%{opacity:.4}}
+
+  /* training panel */
+  .train-body{padding:20px 22px;display:flex;flex-direction:column;gap:14px;flex:1}
+  .loss-big{display:flex;align-items:baseline;gap:10px;font-family:var(--mono)}
+  .loss-big .v{font-size:42px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .loss-big .lbl{font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.14em}
+  .loss-big .delta{margin-left:auto;font-size:12px;color:var(--green);font-weight:600}
+  .loss-svg{width:100%;height:180px;display:block}
+  .train-stats{display:grid;grid-template-columns:repeat(4, 1fr);gap:10px}
+  .stat-cell{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#0f0a07}
+  .stat-cell .k{font-family:var(--mono);font-size:9.5px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.14em}
+  .stat-cell .v{font-family:var(--mono);font-size:15px;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums;font-weight:600}
+  .stat-cell .v.accent{color:var(--orange)}
+
+  /* inference panel */
+  .chat-body{padding:18px 20px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
+  .msgs{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:10px;min-height:280px;justify-content:flex-end}
+  .msg{
+    padding:11px 14px;border-radius:10px;max-width:88%;font-size:14px;line-height:1.45;
+    letter-spacing:-.005em;
+  }
+  .msg.user{
+    align-self:flex-end;background:#221a14;border:1px solid var(--line-2);color:var(--ink);
+  }
+  .msg.bot{
+    align-self:flex-start;background:#0f0a07;border:1px solid var(--line);color:var(--ink-dim);
+    position:relative;font-family:var(--mono);font-size:13.5px;
+  }
+  .msg.bot .who{
+    font-family:var(--mono);font-size:10px;color:var(--orange);letter-spacing:.12em;
+    text-transform:uppercase;margin-bottom:6px;display:block;font-weight:500;
+  }
+  .msg.bot .body{color:var(--ink)}
+  .msg.bot .cursor{display:inline-block;width:7px;height:14px;background:var(--orange);vertical-align:middle;margin-left:2px;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .chat-foot{display:flex;align-items:center;gap:10px;padding-top:6px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink-mute)}
+  .chat-foot .tok{margin-left:auto}
+  .chat-foot .tok b{color:var(--orange);font-weight:600}
+
+  /* three callouts */
+  .three{
+    display:grid;grid-template-columns:repeat(3, 1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  }
+  .three .item{padding:32px 28px;background:var(--bg-card);display:flex;flex-direction:column}
+  .three .item .no{
+    font-family:var(--mono);font-size:11px;color:var(--orange);font-weight:500;
+    letter-spacing:.16em;margin-bottom:18px;
+  }
+  .three .item h3{font-size:22px;font-weight:700;margin:0 0 10px;letter-spacing:-.015em;line-height:1.2}
+  .three .item h3 .accent{color:var(--orange-2)}
+  .three .item p{font-size:14.5px;color:var(--ink-dim);line-height:1.55;margin:0 0 18px;flex:1}
+  .three .item a.link{font-family:var(--mono);font-size:12px;color:var(--orange);font-weight:500;letter-spacing:.04em}
+  .three .item a.link:hover{color:var(--orange-2)}
+
+  /* cta */
+  .cta{padding-top:110px;padding-bottom:120px;border-top:1px solid var(--line);text-align:center}
+  .cta h2{
+    font-size:clamp(40px, 6vw, 76px);line-height:1.02;letter-spacing:-.03em;
+    font-weight:700;margin:0 0 22px;
+  }
+  .cta h2 .accent{color:var(--orange-2)}
+  .cta p{color:var(--ink-dim);font-size:18px;margin:0 auto 28px;max-width:540px;line-height:1.5}
+  .cta .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  @media (max-width: 920px){
+    .three{grid-template-columns:1fr}
+    .demo-2up{grid-template-columns:1fr}
+    .train-stats{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">NeuralCabin</span>
+    </a>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="downloads.html">Downloads</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">GitHub</a></li>
+    </ul>
+    <div class="spacer"></div>
+    <span class="pill"><span class="dot"></span>v0.4 · open source</span>
+    <a class="gh" href="downloads.html">Download</a>
+  </div>
+</nav>
+
+<section class="hero shell">
+  <div class="eyebrow"><span class="bar"></span>Pure Rust neural-network workbench<span class="bar"></span></div>
+  <h1 class="hero-h">Build networks.<br/>Not <span class="accent">wrappers.</span></h1>
+  <p class="hero-sub">
+    A desktop workbench for <strong>creating and designing</strong> neural networks — from feed-forward classifiers to llama-style LMs. Pure Rust. Zero Python. <strong>No bullshit.</strong>
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="downloads.html">Download v0.4 <span class="arr">→</span></a>
+    <a class="btn btn-ghost" href="about.html">Read about it <span class="arr">→</span></a>
+  </div>
+  <div class="hero-meta">
+    <span><b>67.5%</b> Rust</span>
+    <span><b>0</b> math deps</span>
+    <span><b>~10 MB</b> binary</span>
+    <span><b>Win · mac · Linux</b></span>
+  </div>
+</section>
+
+<!-- live demo: training + inference -->
+<section class="demo-wrap shell">
+  <div class="demo-2up">
+
+    <!-- TRAINING -->
+    <div class="panel glow">
+      <div class="ph">
+        <span class="lbl">Training</span>
+        <span class="title">nano-llama · <span class="accent">transformer-lm</span></span>
+        <span class="spacer"></span>
+        <span class="status live"><span class="dot"></span>training</span>
+      </div>
+      <div class="train-body">
+        <div class="loss-big">
+          <span class="v" id="loss-v">1.247</span>
+          <span class="lbl">loss</span>
+          <span class="delta" id="loss-d">↓ 0.000</span>
+        </div>
+        <svg class="loss-svg" id="loss-svg" viewBox="0 0 600 180" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="lossG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#e8835a" stop-opacity=".5"/>
+              <stop offset="100%" stop-color="#e8835a" stop-opacity="0"/>
+            </linearGradient>
+            <pattern id="lossGrid" width="60" height="36" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 36" fill="none" stroke="#2a2018" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="600" height="180" fill="url(#lossGrid)"/>
+          <path id="loss-area" d="" fill="url(#lossG)"/>
+          <path id="loss-line" d="" fill="none" stroke="#e8835a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle id="loss-dot" cx="0" cy="0" r="3.5" fill="#e8835a"/>
+          <circle id="loss-halo" cx="0" cy="0" r="9" fill="none" stroke="#e8835a" stroke-opacity=".3"/>
+        </svg>
+        <div class="train-stats">
+          <div class="stat-cell"><div class="k">epoch</div><div class="v accent" id="st-ep">0</div></div>
+          <div class="stat-cell"><div class="k">ep / sec</div><div class="v" id="st-eps">0</div></div>
+          <div class="stat-cell"><div class="k">lr</div><div class="v">3e-4</div></div>
+          <div class="stat-cell"><div class="k">params</div><div class="v">131,392</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFERENCE -->
+    <div class="panel">
+      <div class="ph">
+        <span class="lbl">Inference</span>
+        <span class="title">nano-llama · <span class="accent">trained</span></span>
+        <span class="spacer"></span>
+        <span class="status ready"><span class="dot"></span>ready</span>
+      </div>
+      <div class="chat-body">
+        <div class="msgs" id="msgs"></div>
+        <div class="chat-foot">
+          <span>ctx 64 · temp 0.7</span>
+          <span class="tok"><b id="tps">0</b> tok/s</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- three callouts -->
+<section class="section shell">
+  <div class="three">
+    <div class="item">
+      <div class="no">▌ 01 · About</div>
+      <h3>You are the <span class="accent">author.</span></h3>
+      <p>NeuralCabin is not another LM runner. You compose layers, activations, and optimizers by hand. You train on your corpus. You walk away with weights that are yours.</p>
+      <a class="link" href="about.html">How it works →</a>
+    </div>
+    <div class="item">
+      <div class="no">▌ 02 · Downloads</div>
+      <h3>Native installers.</h3>
+      <p>One-click installers for Windows (.msi), macOS (.dmg), and Linux (.AppImage / .deb). Auto-built from CI on every release. ~10 MB. No localhost.</p>
+      <a class="link" href="downloads.html">Get the app →</a>
+    </div>
+    <div class="item">
+      <div class="no">▌ 03 · Cloud</div>
+      <h3>Coming to the <span class="accent">browser.</span></h3>
+      <p>Build, train, and play with networks from your browser on a paid VM. No install required. Now in preview — reserve a seat.</p>
+      <a class="link" href="pricing.html">See pricing →</a>
+    </div>
+  </div>
+</section>
+
+<!-- cta -->
+<section class="cta">
+  <div class="shell">
+    <h2>Stop running models.<br/><span class="accent">Start building them.</span></h2>
+    <p>Download the workbench. Train an XOR. Train an LM. Ship something that is actually yours.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="downloads.html">Download v0.4 <span class="arr">↓</span></a>
+      <a class="btn btn-ghost" href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">Source on GitHub <span class="arr">★</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="shell foot">
+    <div class="foot-l">© 2026 <b>NeuralCabin</b> · GPL-3.0 · Built in Rust, in public.</div>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="downloads.html">Downloads</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">GitHub</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* ============= TRAINING LOSS ANIMATION ============= */
+  const W = 600, H = 180;
+  const PAD_T = 8, PAD_B = 8;
+  const TOTAL_EPOCHS = 1200;
+  const losses = [];
+  let epoch = 0;
+
+  function lossAt(ep){
+    // realistic-ish decay: starts ~1.35, decays toward ~0.08, with mild noise
+    const decay = 1.35 * Math.exp(-ep / 220) + 0.08;
+    const noise = (Math.random() - 0.5) * 0.025;
+    return Math.max(0.05, decay + noise);
+  }
+
+  // seed with a few starting points for instant visual
+  for (let i = 0; i < 4; i++){ losses.push(lossAt(i)); epoch = i; }
+
+  const minLoss = 0.05;
+  const maxLoss = 1.4;
+  function yFor(l){
+    const t = (l - minLoss) / (maxLoss - minLoss);
+    return PAD_T + (1 - t) * (H - PAD_T - PAD_B);
+  }
+  function xFor(i){
+    return (i / Math.max(1, TOTAL_EPOCHS - 1)) * W;
+  }
+
+  const lineEl = document.getElementById("loss-line");
+  const areaEl = document.getElementById("loss-area");
+  const dotEl  = document.getElementById("loss-dot");
+  const haloEl = document.getElementById("loss-halo");
+  const vEl    = document.getElementById("loss-v");
+  const dEl    = document.getElementById("loss-d");
+  const epEl   = document.getElementById("st-ep");
+  const epsEl  = document.getElementById("st-eps");
+
+  let prevLoss = losses[0];
+
+  function render(){
+    if (!losses.length) return;
+    let d = "";
+    for (let i = 0; i < losses.length; i++){
+      const x = xFor(i), y = yFor(losses[i]);
+      d += (i === 0 ? "M " : "L ") + x.toFixed(1) + " " + y.toFixed(1) + " ";
+    }
+    lineEl.setAttribute("d", d);
+    const lastX = xFor(losses.length - 1);
+    areaEl.setAttribute("d", d + "L " + lastX.toFixed(1) + " " + H + " L 0 " + H + " Z");
+
+    const cy = yFor(losses[losses.length - 1]);
+    dotEl.setAttribute("cx", lastX.toFixed(1));
+    dotEl.setAttribute("cy", cy.toFixed(1));
+    haloEl.setAttribute("cx", lastX.toFixed(1));
+    haloEl.setAttribute("cy", cy.toFixed(1));
+
+    const cur = losses[losses.length - 1];
+    vEl.textContent = cur.toFixed(3);
+    const delta = prevLoss - cur;
+    dEl.textContent = (delta >= 0 ? "↓ " : "↑ ") + Math.abs(delta).toFixed(4);
+    dEl.style.color = delta >= 0 ? "var(--green)" : "var(--red)";
+    prevLoss = cur;
+
+    epEl.textContent = epoch.toString();
+  }
+  render();
+
+  function tickTrain(){
+    epoch++;
+    losses.push(lossAt(epoch));
+    if (losses.length > TOTAL_EPOCHS) losses.shift();
+    if (epoch >= TOTAL_EPOCHS){
+      // restart from 0 with a fresh seed for the perpetual demo
+      losses.length = 0;
+      epoch = 0;
+      for (let i = 0; i < 4; i++){ losses.push(lossAt(i)); epoch = i; }
+    }
+    render();
+  }
+
+  // ep/sec readout (steady-state synthetic figure)
+  let displayedEps = 0;
+  function tickEps(){
+    const target = 2100 + Math.sin(Date.now()/1500) * 90;
+    displayedEps += (target - displayedEps) * 0.15;
+    epsEl.textContent = displayedEps.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  setInterval(tickTrain, 90);
+  setInterval(tickEps, 200);
+
+  /* ============= INFERENCE CHAT ANIMATION ============= */
+  const dialogs = [
+    {
+      q: "Explain what a tanh activation does in one sentence.",
+      a: "Tanh squashes any real input into the range (−1, 1), making it useful as a zero-centered alternative to sigmoid for hidden layers — though it still saturates at the extremes, which can stall gradients."
+    },
+    {
+      q: "Write a haiku about gradient descent.",
+      a: "loss curves bend downward / weights take their cautious small steps / minima patient"
+    },
+    {
+      q: "What's the difference between Adam and SGD?",
+      a: "SGD takes a fixed-rate step in the direction of the current gradient. Adam keeps running estimates of the gradient's first and second moments and adapts the step size per-parameter — it converges faster on most problems, but uses ~3× more memory."
+    },
+    {
+      q: "Why do we need a non-linear activation function?",
+      a: "Without one, stacking linear layers just gives you another linear layer — the whole network collapses to a single matrix. Non-linearities are what let the network represent curved decision boundaries."
+    },
+  ];
+
+  const msgsEl = document.getElementById("msgs");
+  const tpsEl  = document.getElementById("tps");
+  let dlgIdx = 0;
+
+  function delay(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+  function addUser(text){
+    const el = document.createElement("div");
+    el.className = "msg user";
+    el.textContent = text;
+    msgsEl.appendChild(el);
+    trimMsgs();
+  }
+  function addBot(){
+    const el = document.createElement("div");
+    el.className = "msg bot";
+    el.innerHTML = '<span class="who">nano-llama</span><span class="body"></span><span class="cursor"></span>';
+    msgsEl.appendChild(el);
+    trimMsgs();
+    return el;
+  }
+  function trimMsgs(){
+    // keep at most last 4 messages so the panel does not overflow
+    while (msgsEl.children.length > 4){
+      msgsEl.removeChild(msgsEl.firstChild);
+    }
+  }
+
+  async function typeOut(el, text){
+    const body = el.querySelector(".body");
+    const cursor = el.querySelector(".cursor");
+    const tStart = Date.now();
+    let toks = 0;
+    for (let i = 0; i < text.length; i++){
+      body.textContent += text[i];
+      toks = Math.max(toks, Math.round(body.textContent.length / 4.2));
+      const elapsed = (Date.now() - tStart) / 1000;
+      tpsEl.textContent = elapsed > 0 ? Math.round(toks / elapsed).toString() : "0";
+      // typing speed: faster for spaces, slower mid-word
+      const ch = text[i];
+      const wait = ch === " " ? 12 + Math.random()*10
+                  : ch === "." || ch === "," ? 90 + Math.random()*60
+                  : 22 + Math.random()*22;
+      await delay(wait);
+    }
+    cursor.remove();
+  }
+
+  async function runChat(){
+    while (true){
+      const d = dialogs[dlgIdx % dialogs.length];
+      dlgIdx++;
+
+      // user appears, then bot "thinks", then streams
+      addUser(d.q);
+      await delay(450);
+      tpsEl.textContent = "0";
+      const bot = addBot();
+      await delay(380);
+      await typeOut(bot, d.a);
+      await delay(2600);
+    }
+  }
+
+  runChat();
+})();
+</script>
+
+</body>
+</html>

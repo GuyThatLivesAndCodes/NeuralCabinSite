@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Downloads — NeuralCabin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .page-hero{padding-top:96px;padding-bottom:24px}
+  h1.page-h{
+    font-size:clamp(48px, 7vw, 92px);line-height:1;letter-spacing:-.035em;
+    margin:0 0 22px;font-weight:700;max-width:16ch;
+  }
+  h1.page-h .accent{color:var(--orange-2)}
+  .page-sub{font-size:19px;color:var(--ink-dim);max-width:680px;line-height:1.55;margin:0}
+  .page-sub strong{color:var(--ink);font-weight:600}
+
+  /* hero recommended download card */
+  .hero-dl-wrap{padding-top:32px;padding-bottom:60px}
+  .hero-dl{
+    border:1px solid var(--orange);border-radius:14px;
+    background:linear-gradient(180deg, rgba(232,131,90,.10) 0%, var(--bg-card) 100%);
+    padding:36px 40px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;
+  }
+  .hero-dl .left .tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:11px;color:var(--orange);
+    letter-spacing:.14em;text-transform:uppercase;font-weight:500;
+    padding:5px 10px;border:1px solid var(--orange-ring);border-radius:999px;
+    margin-bottom:18px;
+  }
+  .hero-dl h2{font-size:34px;font-weight:700;margin:0 0 8px;letter-spacing:-.02em;line-height:1.1}
+  .hero-dl h2 .accent{color:var(--orange-2)}
+  .hero-dl .meta{
+    display:flex;gap:22px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:12px;color:var(--ink-mute);
+    letter-spacing:.06em;
+  }
+  .hero-dl .meta b{color:var(--ink);font-weight:600}
+  .hero-dl .right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+  .hero-dl .right .size{font-family:var(--mono);font-size:11px;color:var(--ink-mute)}
+  .hero-dl .right .alt{font-family:var(--mono);font-size:11px;color:var(--ink-dim)}
+  .hero-dl .right .alt a{color:var(--orange);font-weight:500}
+  .hero-dl .right .alt a:hover{color:var(--orange-2)}
+  .big-btn{
+    display:inline-flex;align-items:center;gap:14px;
+    padding:18px 28px;border-radius:10px;
+    background:var(--orange);color:#1a0f06;font-weight:700;font-size:17px;
+    letter-spacing:-.005em;cursor:pointer;border:none;font-family:var(--sans);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .big-btn:hover{background:var(--orange-2);transform:translateY(-1px)}
+  .big-btn .arr{font-family:var(--mono);font-size:14px;font-weight:500}
+  .big-btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* OS grid */
+  .os-grid-wrap{padding-bottom:56px}
+  .os-section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+  .os-section-head h3{font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .os-section-head .sub{font-family:var(--mono);font-size:11px;color:var(--ink-mute);letter-spacing:.12em;text-transform:uppercase}
+  .os-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:14px}
+  .os-card{
+    border:1px solid var(--line);border-radius:12px;background:var(--bg-card);
+    padding:24px;display:flex;flex-direction:column;gap:14px;
+    transition:border-color .15s ease;
+  }
+  .os-card.active{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-soft)}
+  .os-card .head{display:flex;align-items:center;gap:12px}
+  .os-card .head .ic{
+    width:36px;height:36px;border-radius:8px;background:#0f0a07;border:1px solid var(--line-2);
+    display:flex;align-items:center;justify-content:center;color:var(--orange);font-family:var(--mono);font-weight:600;
+  }
+  .os-card .head h4{font-size:17px;margin:0;font-weight:700;letter-spacing:-.01em}
+  .os-card .head .arch{font-family:var(--mono);font-size:11px;color:var(--ink-mute);margin-left:auto}
+  .os-card .files{display:flex;flex-direction:column;gap:8px;flex:1}
+  .os-card .file{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:11px 14px;border:1px solid var(--line);border-radius:8px;background:#0f0a07;
+    font-family:var(--mono);font-size:12px;color:var(--ink-dim);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .os-card .file:hover{border-color:var(--orange-ring);background:#160e08;color:var(--ink)}
+  .os-card .file .nm{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .os-card .file .nm .ext{color:var(--orange);font-weight:600}
+  .os-card .file .nm .sz{color:var(--ink-mute);font-size:10.5px;letter-spacing:.06em}
+  .os-card .file .dl{
+    padding:6px 12px;border-radius:6px;background:var(--orange);color:#1a0f06;
+    font-weight:600;font-size:11px;font-family:var(--sans);letter-spacing:0;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  }
+  .os-card .file .dl:hover{background:var(--orange-2)}
+  .os-card .empty{
+    padding:14px;border:1px dashed var(--line-2);border-radius:8px;
+    font-family:var(--mono);font-size:11px;color:var(--ink-mute);text-align:center;
+  }
+
+  /* loading / error states */
+  .state{
+    border:1px solid var(--line);border-radius:12px;background:var(--bg-card);
+    padding:32px;text-align:center;font-family:var(--mono);font-size:13px;color:var(--ink-dim);
+  }
+  .state .spin{
+    width:24px;height:24px;border:2px solid var(--line-2);border-top-color:var(--orange);
+    border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 14px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .state.err{border-color:var(--red);color:var(--red)}
+  .state .retry{margin-top:14px;display:inline-block;color:var(--orange);text-decoration:underline;cursor:pointer}
+
+  /* releases list */
+  .releases-wrap{padding-top:24px;padding-bottom:96px}
+  .rel{
+    border:1px solid var(--line);border-radius:10px;background:var(--bg-card);
+    padding:20px 24px;margin-bottom:10px;
+  }
+  .rel-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .rel-head h4{font-size:18px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .rel-head .tag{font-family:var(--mono);font-size:11px;color:var(--orange);padding:3px 8px;border:1px solid var(--orange-ring);border-radius:999px}
+  .rel-head .date{font-family:var(--mono);font-size:11px;color:var(--ink-mute);letter-spacing:.06em}
+  .rel-head .spacer{flex:1}
+  .rel-head a.repo{font-family:var(--mono);font-size:11px;color:var(--ink-dim);text-decoration:underline}
+  .rel-head a.repo:hover{color:var(--orange-2)}
+  .rel-body{font-size:14px;color:var(--ink-dim);line-height:1.55;margin-bottom:14px;max-height:140px;overflow:hidden;position:relative}
+  .rel-body.expanded{max-height:none}
+  .rel-body::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:50px;
+    background:linear-gradient(180deg, transparent, var(--bg-card));pointer-events:none;
+  }
+  .rel-body.expanded::after{display:none}
+  .rel-body pre, .rel-body code{font-family:var(--mono);font-size:12px;color:var(--ink)}
+  .rel-toggle{
+    font-family:var(--mono);font-size:11px;color:var(--orange);cursor:pointer;
+    background:none;border:none;padding:0;letter-spacing:.04em;
+  }
+  .rel-assets{display:grid;grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));gap:8px;margin-top:14px}
+  .rel-asset{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:#0f0a07;
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);
+  }
+  .rel-asset:hover{border-color:var(--orange-ring);color:var(--ink)}
+  .rel-asset .ext{color:var(--orange);font-weight:600}
+  .rel-asset .sz{color:var(--ink-mute);font-size:10.5px}
+
+  /* build from source */
+  .bfs-wrap{padding-top:0;padding-bottom:80px}
+  .bfs{
+    border:1px solid var(--line);border-radius:12px;background:var(--bg-card);
+    padding:28px 32px;display:grid;grid-template-columns:1fr 1.2fr;gap:32px;align-items:start;
+  }
+  .bfs h3{font-size:22px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em}
+  .bfs p{font-size:14.5px;color:var(--ink-dim);line-height:1.55;margin:0 0 10px}
+  .bfs code.inline{font-family:var(--mono);color:var(--orange-2);font-size:13px}
+  .bfs pre{
+    margin:0;padding:18px 20px;border-radius:8px;background:#0e0a07;border:1px solid var(--line);
+    font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--ink);overflow:auto;
+  }
+  .bfs pre .cm{color:#6e5d44}
+  .bfs pre .pr{color:var(--orange)}
+
+  @media (max-width: 920px){
+    .hero-dl{grid-template-columns:1fr;text-align:left}
+    .hero-dl .right{align-items:flex-start}
+    .os-grid{grid-template-columns:1fr}
+    .bfs{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"></span>
+      <span class="brand-name">NeuralCabin</span>
+    </a>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="downloads.html" class="current">Downloads</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">GitHub</a></li>
+    </ul>
+    <div class="spacer"></div>
+    <span class="pill"><span class="dot"></span><span id="latest-pill">loading…</span></span>
+    <a class="gh" href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">Source ↗</a>
+  </div>
+</nav>
+
+<section class="page-hero shell">
+  <div class="eyebrow"><span class="bar"></span>Downloads</div>
+  <h1 class="page-h">Get <span class="accent">NeuralCabin.</span></h1>
+  <p class="page-sub">
+    Pulled live from the <strong>GitHub releases API.</strong> Pick your OS — or click recommended for an auto-match. ~10 MB binaries. <strong>No tracking, no telemetry.</strong>
+  </p>
+</section>
+
+<!-- recommended -->
+<section class="hero-dl-wrap shell">
+  <div id="recommended" class="state">
+    <div class="spin"></div>
+    Fetching latest release from GitHub…
+  </div>
+</section>
+
+<!-- per-OS grid -->
+<section class="os-grid-wrap shell">
+  <div class="os-section-head">
+    <h3>Every platform</h3>
+    <span class="sub" id="latest-meta">— · loading</span>
+  </div>
+  <div class="os-grid" id="os-grid">
+    <!-- populated -->
+  </div>
+</section>
+
+<!-- build from source -->
+<section class="bfs-wrap shell">
+  <div class="bfs">
+    <div>
+      <h3>Prefer to build it yourself?</h3>
+      <p>NeuralCabin is GPL-3.0 — the source is on GitHub and the engine has zero math dependencies. Build the desktop app or use <code class="inline">neuralcabin_engine</code> as a normal Rust crate.</p>
+      <p>You will need <code class="inline">rustup</code> and Node.js. Tauri builds installers locally.</p>
+      <a class="btn btn-ghost" href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">View source on GitHub <span class="arr">↗</span></a>
+    </div>
+<pre><span class="cm"># Prerequisites: Rust (rustup.rs) and Node.js</span>
+git clone https://github.com/GuyThatLivesAndCodes/NeuralCabin
+<span class="pr">cd</span> NeuralCabin
+
+npm install
+npm --prefix frontend install
+
+<span class="cm"># Development mode — opens Tauri window w/ Vite hot-reload</span>
+npm run dev
+
+<span class="cm"># Production build — installer in src-tauri/target/release/bundle/</span>
+npm run tauri -- build</pre>
+  </div>
+</section>
+
+<!-- previous releases -->
+<section class="releases-wrap shell">
+  <div class="os-section-head">
+    <h3>All releases</h3>
+    <span class="sub">Pulled live · GitHub API</span>
+  </div>
+  <div id="releases">
+    <div class="state"><div class="spin"></div>Loading release history…</div>
+  </div>
+</section>
+
+<footer>
+  <div class="shell foot">
+    <div class="foot-l">© 2026 <b>NeuralCabin</b> · GPL-3.0 · Built in Rust, in public.</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="https://github.com/GuyThatLivesAndCodes/NeuralCabin">GitHub</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const REPO = "GuyThatLivesAndCodes/NeuralCabin";
+  const API  = "https://api.github.com/repos/" + REPO + "/releases";
+
+  /* ---------- OS detection ---------- */
+  function detectOS(){
+    const ua = navigator.userAgent;
+    const p = navigator.platform || "";
+    if (/Win/i.test(p) || /Windows/i.test(ua)) return "windows";
+    if (/Mac/i.test(p) || /Mac OS X|Macintosh/i.test(ua)) return "macos";
+    if (/Linux|X11/i.test(p) || /Linux/i.test(ua)) return "linux";
+    return "windows";
+  }
+  function detectArch(){
+    const ua = navigator.userAgent;
+    if (/arm64|aarch64|Apple M[0-9]/i.test(ua) || /Mac/i.test(navigator.platform) && navigator.maxTouchPoints > 1) return "arm64";
+    return "x64";
+  }
+  const OS = detectOS();
+  const ARCH = detectArch();
+
+  const OS_LABEL = {
+    windows: "Windows",
+    macos: "macOS",
+    linux: "Linux",
+  };
+
+  /* ---------- asset classification ---------- */
+  function classify(name){
+    const n = name.toLowerCase();
+    if (n.endsWith(".msi") || n.endsWith(".exe")) return {os:"windows", ext:n.split(".").pop().toUpperCase()};
+    if (n.endsWith(".dmg") || n.endsWith(".pkg")) return {os:"macos",   ext:n.split(".").pop().toUpperCase()};
+    if (n.endsWith(".appimage"))                  return {os:"linux",   ext:"AppImage"};
+    if (n.endsWith(".deb"))                       return {os:"linux",   ext:"DEB"};
+    if (n.endsWith(".rpm"))                       return {os:"linux",   ext:"RPM"};
+    if (n.endsWith(".tar.gz") || n.endsWith(".tgz")) return {os:"linux", ext:"TAR.GZ"};
+    if (n.endsWith(".zip"))                       return {os:null,      ext:"ZIP"};
+    return {os:null, ext:n.split(".").pop().toUpperCase()};
+  }
+
+  function fmtSize(b){
+    if (!b && b !== 0) return "";
+    if (b < 1024) return b + " B";
+    if (b < 1024*1024) return (b/1024).toFixed(1) + " KB";
+    if (b < 1024*1024*1024) return (b/(1024*1024)).toFixed(1) + " MB";
+    return (b/(1024*1024*1024)).toFixed(2) + " GB";
+  }
+  function fmtDate(s){
+    if (!s) return "";
+    const d = new Date(s);
+    return d.toLocaleDateString(undefined, {year:"numeric", month:"short", day:"numeric"});
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  }
+
+  /* very small markdown→html for release bodies */
+  function md(s){
+    if (!s) return "<em style='color:var(--ink-mute)'>No release notes.</em>";
+    let h = esc(s);
+    // code blocks
+    h = h.replace(/```([\s\S]*?)```/g, (m,c) => "<pre style='background:#0e0a07;border:1px solid var(--line);border-radius:6px;padding:10px;overflow:auto'><code>" + c + "</code></pre>");
+    // inline code
+    h = h.replace(/`([^`]+)`/g, "<code style='background:#0e0a07;padding:1px 5px;border-radius:3px;color:var(--orange-2)'>$1</code>");
+    // headers
+    h = h.replace(/^### (.+)$/gm, "<div style='font-weight:700;color:var(--ink);margin:10px 0 4px;font-size:14px'>$1</div>");
+    h = h.replace(/^## (.+)$/gm,  "<div style='font-weight:700;color:var(--ink);margin:12px 0 6px;font-size:15px'>$1</div>");
+    h = h.replace(/^# (.+)$/gm,   "<div style='font-weight:700;color:var(--ink);margin:14px 0 8px;font-size:16px'>$1</div>");
+    // bullets
+    h = h.replace(/^[-*] (.+)$/gm, "<div style='padding:2px 0 2px 14px;position:relative'><span style='position:absolute;left:0;color:var(--orange)'>•</span>$1</div>");
+    // bold
+    h = h.replace(/\*\*([^*]+)\*\*/g, "<strong style='color:var(--ink)'>$1</strong>");
+    // line breaks
+    h = h.replace(/\n\n+/g, "<div style='height:8px'></div>");
+    h = h.replace(/\n/g, "<br/>");
+    return h;
+  }
+
+  /* ---------- fetch ---------- */
+  async function load(){
+    try {
+      const res = await fetch(API, { headers: { "Accept": "application/vnd.github+json" } });
+      if (!res.ok){
+        if (res.status === 403){
+          throw new Error("GitHub API rate limit reached. Try again in a few minutes, or browse releases directly on GitHub.");
+        }
+        if (res.status === 404){
+          throw new Error("No releases found for this repository yet.");
+        }
+        throw new Error("GitHub API returned " + res.status);
+      }
+      const data = await res.json();
+      const releases = (data || []).filter(r => !r.draft);
+      renderAll(releases);
+    } catch (e){
+      renderError(e.message || String(e));
+    }
+  }
+
+  function renderError(msg){
+    const html = '<div class="state err">' +
+      '<div style="font-weight:600;margin-bottom:8px;color:var(--red)">Could not load releases</div>' +
+      '<div style="color:var(--ink-dim)">' + esc(msg) + '</div>' +
+      '<a class="retry" href="https://github.com/' + REPO + '/releases">→ Browse releases on GitHub</a>' +
+    '</div>';
+    document.getElementById("recommended").outerHTML = '<div id="recommended">' + html + '</div>';
+    document.getElementById("releases").innerHTML = "";
+    document.getElementById("latest-pill").textContent = "github →";
+    document.getElementById("latest-meta").textContent = "—";
+  }
+
+  function renderAll(releases){
+    if (!releases.length){
+      renderError("No published releases yet. Build from source below, or watch the repo for the first cut.");
+      return;
+    }
+    const latest = releases[0];
+    renderRecommended(latest);
+    renderOSGrid(latest);
+    renderReleases(releases);
+
+    // nav pill + meta
+    document.getElementById("latest-pill").textContent = latest.tag_name + " · " + fmtDate(latest.published_at || latest.created_at);
+    document.getElementById("latest-meta").textContent = "Latest: " + latest.tag_name + " · " + fmtDate(latest.published_at || latest.created_at);
+  }
+
+  function pickRecommendedAsset(release, os){
+    const assets = release.assets || [];
+    const matches = assets.filter(a => classify(a.name).os === os);
+    if (!matches.length) return null;
+    // Prefer .msi / .dmg / .AppImage / .deb in that order
+    const order = {windows:["msi","exe","zip"], macos:["dmg","pkg","zip"], linux:["appimage","deb","rpm","tar.gz","zip"]};
+    const pref = order[os] || [];
+    matches.sort((a,b) => {
+      const ai = pref.findIndex(e => a.name.toLowerCase().endsWith("." + e));
+      const bi = pref.findIndex(e => b.name.toLowerCase().endsWith("." + e));
+      return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+    });
+    return matches[0];
+  }
+
+  function renderRecommended(latest){
+    const target = document.getElementById("recommended");
+    const asset = pickRecommendedAsset(latest, OS);
+    const osLabel = OS_LABEL[OS];
+    const archLabel = ARCH === "arm64" ? "ARM64" : "x64";
+
+    let inner;
+    if (asset){
+      const cls = classify(asset.name);
+      inner =
+        '<div class="left">' +
+          '<span class="tag">● Recommended for ' + esc(osLabel) + '</span>' +
+          '<h2>NeuralCabin <span class="accent">' + esc(latest.tag_name) + '</span></h2>' +
+          '<div class="meta">' +
+            '<span><b>OS detected:</b> ' + esc(osLabel) + ' · ' + archLabel + '</span>' +
+            '<span><b>Released:</b> ' + esc(fmtDate(latest.published_at || latest.created_at)) + '</span>' +
+            '<span><b>Format:</b> .' + esc(cls.ext) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="right">' +
+          '<a class="big-btn" href="' + esc(asset.browser_download_url) + '" download>' +
+            'Download for ' + esc(osLabel) + ' <span class="arr">↓</span>' +
+          '</a>' +
+          '<div class="size">' + esc(asset.name) + ' · ' + fmtSize(asset.size) + '</div>' +
+          '<div class="alt">Wrong OS? Pick <a href="#all">manually below ↓</a></div>' +
+        '</div>';
+    } else {
+      // no asset for this OS — fall back to listing
+      inner =
+        '<div class="left">' +
+          '<span class="tag">● Latest release</span>' +
+          '<h2>NeuralCabin <span class="accent">' + esc(latest.tag_name) + '</span></h2>' +
+          '<div class="meta">' +
+            '<span><b>No prebuilt installer</b> for your detected OS (' + esc(osLabel) + ')</span>' +
+            '<span><b>Released:</b> ' + esc(fmtDate(latest.published_at || latest.created_at)) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="right">' +
+          '<a class="big-btn" href="' + esc(latest.html_url) + '">View on GitHub <span class="arr">↗</span></a>' +
+          '<div class="alt">Or <a href="#all">browse other platforms ↓</a></div>' +
+        '</div>';
+    }
+    target.classList.remove("state");
+    target.className = "hero-dl";
+    target.innerHTML = inner;
+  }
+
+  function renderOSGrid(latest){
+    const grid = document.getElementById("os-grid");
+    const assets = latest.assets || [];
+    const byOS = { windows: [], macos: [], linux: [] };
+    assets.forEach(a => {
+      const cls = classify(a.name);
+      if (cls.os) byOS[cls.os].push({asset:a, ext:cls.ext});
+    });
+
+    const cards = [
+      { os: "windows", glyph: "▢", title: "Windows", arch: "x64 · ARM64" },
+      { os: "macos",   glyph: "◉", title: "macOS",   arch: "Intel · Apple Silicon" },
+      { os: "linux",   glyph: "△", title: "Linux",   arch: "x86_64" },
+    ];
+
+    grid.innerHTML = cards.map(c => {
+      const items = byOS[c.os] || [];
+      const filesHTML = items.length
+        ? items.map(({asset, ext}) =>
+            '<div class="file">' +
+              '<div class="nm">' +
+                '<span><span class="ext">.' + esc(ext) + '</span> · ' + esc(asset.name) + '</span>' +
+                '<span class="sz">' + fmtSize(asset.size) + ' · ' + asset.download_count + ' downloads</span>' +
+              '</div>' +
+              '<a class="dl" href="' + esc(asset.browser_download_url) + '" download>↓ Get</a>' +
+            '</div>'
+          ).join("")
+        : '<div class="empty">No prebuilt installer for ' + esc(c.title) + ' in this release. Build from source ↓</div>';
+
+      return '<div class="os-card ' + (c.os === OS ? "active" : "") + '">' +
+        '<div class="head">' +
+          '<div class="ic">' + c.glyph + '</div>' +
+          '<h4>' + esc(c.title) + '</h4>' +
+          '<span class="arch">' + esc(c.arch) + '</span>' +
+        '</div>' +
+        '<div class="files">' + filesHTML + '</div>' +
+      '</div>';
+    }).join("");
+
+    // anchor target for "browse manually below"
+    grid.id = "os-grid";
+    if (!document.getElementById("all")) {
+      const a = document.createElement("a");
+      a.id = "all"; a.style.position = "relative"; a.style.top = "-80px";
+      grid.parentNode.insertBefore(a, grid);
+    }
+  }
+
+  function renderReleases(releases){
+    const target = document.getElementById("releases");
+    target.innerHTML = releases.slice(0, 12).map((r, i) => {
+      const isLatest = i === 0;
+      const body = md(r.body || "");
+      const assetsHTML = (r.assets || []).map(a => {
+        const cls = classify(a.name);
+        return '<a class="rel-asset" href="' + esc(a.browser_download_url) + '" download>' +
+          '<span><span class="ext">.' + esc(cls.ext) + '</span> · ' + esc(a.name) + '</span>' +
+          '<span class="sz">' + fmtSize(a.size) + '</span>' +
+        '</a>';
+      }).join("");
+
+      return '<div class="rel">' +
+        '<div class="rel-head">' +
+          '<h4>' + esc(r.name || r.tag_name) + '</h4>' +
+          (isLatest ? '<span class="tag">latest</span>' : '') +
+          (r.prerelease ? '<span class="tag" style="color:var(--green);border-color:rgba(106,217,122,.4)">prerelease</span>' : '') +
+          '<span class="date">' + esc(fmtDate(r.published_at || r.created_at)) + '</span>' +
+          '<span class="spacer"></span>' +
+          '<a class="repo" href="' + esc(r.html_url) + '">on github ↗</a>' +
+        '</div>' +
+        '<div class="rel-body" data-rel="' + i + '">' + body + '</div>' +
+        '<button class="rel-toggle" data-toggle="' + i + '">↓ Show notes</button>' +
+        (assetsHTML ? '<div class="rel-assets">' + assetsHTML + '</div>' : '') +
+      '</div>';
+    }).join("");
+
+    // toggle behaviour
+    target.querySelectorAll(".rel-toggle").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = btn.dataset.toggle;
+        const body = target.querySelector('[data-rel="' + i + '"]');
+        body.classList.toggle("expanded");
+        btn.textContent = body.classList.contains("expanded") ? "↑ Hide notes" : "↓ Show notes";
+      });
+    });
+  }
+
+  load();
+})();
+</script>
+
+</body>
+</html>
